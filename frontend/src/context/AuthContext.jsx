@@ -24,8 +24,10 @@ export const AuthProvider = ({ children }) => {
       const storedToken = localStorage.getItem('token');
       if (storedToken) {
         try {
+          // authService returns res.data (the Axios layer stripped)
+          // Backend envelope: { success, message, data: <payload> }
           const res = await authService.getMe();
-          const meData = res.data;
+          const meData = res.data; // unwrap the envelope's data field
           setUser(meData);
           localStorage.setItem('user', JSON.stringify(meData));
         } catch (err) {
@@ -40,28 +42,51 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (credentials) => {
-    const res = await authService.login(credentials);
-    const { token: newToken, user: userData } = res.data;
-    setToken(newToken);
-    setUser(userData);
-    localStorage.setItem('token', newToken);
-    localStorage.setItem('user', JSON.stringify(userData));
-    return userData;
+    // authService returns res.data = { success, message, data: { token, user } }
+    // so we need .data to get the actual payload
+    try {
+      const res = await authService.login(credentials);
+      const { token: newToken, user: userData } = res.data;
+      setToken(newToken);
+      setUser(userData);
+      localStorage.setItem('token', newToken);
+      localStorage.setItem('user', JSON.stringify(userData));
+      return userData;
+    } catch (err) {
+      const msg = err?.response?.data?.message || err?.message || 'Login failed. Please check your credentials.';
+      throw new Error(msg);
+    }
   };
 
   const register = async (userData) => {
-    const res = await authService.register(userData);
-    return res;
+    try {
+      const res = await authService.register(userData);
+      return res;
+    } catch (err) {
+      // Backend error envelope uses 'message' field
+      const msg = err?.response?.data?.message || err?.message || 'Registration failed.';
+      throw new Error(msg);
+    }
   };
 
   const registerOwner = async (ownerData) => {
-    const res = await authService.registerOwner(ownerData);
-    return res;
+    try {
+      const res = await authService.registerOwner(ownerData);
+      return res;
+    } catch (err) {
+      const msg = err?.response?.data?.message || err?.message || 'Registration failed.';
+      throw new Error(msg);
+    }
   };
 
   const registerAdmin = async (adminData) => {
-    const res = await authService.registerAdmin(adminData);
-    return res;
+    try {
+      const res = await authService.registerAdmin(adminData);
+      return res;
+    } catch (err) {
+      const msg = err?.response?.data?.message || err?.message || 'Registration failed.';
+      throw new Error(msg);
+    }
   };
 
   const logout = () => {
@@ -78,7 +103,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (profileData) => {
     const res = await userService.updateProfile(profileData);
-    const updatedUser = res.data;
+    const updatedUser = res.data; // unwrap backend envelope { success, message, data: <user> }
     setUser(updatedUser);
     localStorage.setItem('user', JSON.stringify(updatedUser));
     return updatedUser;
