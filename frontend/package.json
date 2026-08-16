@@ -1,0 +1,29 @@
+{
+  "name": "store-rating-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "frontend": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "apexcharts": "^6.8.0",
+    "axios": "^1.7.4",
+    "canvas-confetti": "^1.9.4",
+    "framer-motion": "^13.1.0",
+    "lucide-react": "^0.428.0",
+    "react": "^18.3.1",
+    "react-apexcharts": "^2.1.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^8.2.1"
+  }
+}
